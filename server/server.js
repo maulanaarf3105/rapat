@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
+const morgan = require("morgan");
+
 const app = express();
 
 var corsOptions = {
@@ -15,6 +17,10 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+morgan.token('body', (req) => JSON.stringify(req.body));
+morgan.token('id', (req) => JSON.stringify(req.body));
+app.use(morgan(':url :method'));
+
 // database
 const db = require("./app/models");
 const Role = db.role;
@@ -22,6 +28,7 @@ const Role = db.role;
 db.sequelize.sync()
 .then(() => {
   console.log("Synced db.");
+  //initial();
 })
 .catch((err) => {
   console.log("Failed to sync db: " + err.message);
@@ -40,7 +47,8 @@ app.get("/", (req, res) => {
 // routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
-require("./app/routes/meetings.routes")(app);
+require('./app/routes/meetings.routes')(app);
+require('./app/routes/rooms.routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

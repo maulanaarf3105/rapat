@@ -263,26 +263,16 @@ export default {
   },
   methods: {
     register() {
-      this.$refs.registerForm.validate().then(success => {
-        if (success) {
-          useJwt.register({
-            username: this.username,
-            email: this.userEmail,
-            password: this.password,
-          })
-            .then(response => {
-              useJwt.setToken(response.data.accessToken)
-              useJwt.setRefreshToken(response.data.refreshToken)
-              localStorage.setItem('userData', JSON.stringify(response.data.userData))
-              this.$ability.update(response.data.userData.ability)
-              this.$router.push('/')
-            })
-            .catch(error => {
-              this.$refs.registerForm.setErrors(error.response.data.error)
-            })
-        }
-      })
-    },
+    this.$refs.registerForm.validate().then(success => {
+      if (success) {
+        this.$http.post('/api/auth/signup', {
+          username: this.username,
+          email: this.userEmail,
+          password: this.password,
+        }).then(res => console.log(res))
+      }
+    })
+  },
   },
 }
 /* eslint-disable global-require */
